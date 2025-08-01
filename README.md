@@ -6,7 +6,6 @@ This project is a web application built using Python and Streamlit that predicts
 The application provides a user-friendly interface to input car details, get a price prediction, and understand the key factors influencing the predicted value.
 
 Features:
-
 Interactive Interface: A clean and intuitive Streamlit interface for seamless user interaction.
 
 Price Prediction: Predicts car prices using a trained machine learning model.

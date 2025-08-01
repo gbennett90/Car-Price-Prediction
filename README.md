@@ -76,12 +76,12 @@ The predicted prices from both the Linear Regression and XGBoost models will be 
 Deployment
 This application is deployed on Streamlit Cloud and can be accessed at the following URL:
 
-[Link to your deployed app will go here once you've deployed it]
+[https://car-price-prediction-xxkh63jersoo4hnugyuwow.streamlit.app/]
 
 Dataset
 The model was trained on a publicly available dataset. You can find the dataset used for this project at the following link:
 
-Kaggle Car Price Prediction Dataset
+[Kaggle Car Price Prediction Dataset](https://www.kaggle.com/datasets/sukhmandeepsinghbrar/car-price-prediction-dataset/data)
 
 Note: This project is a demonstration and should be used for educational purposes only. The predictions are based on a simplified model and may not reflect the actual market value.
 =======

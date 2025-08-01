@@ -1,4 +1,5 @@
-Car Price Predictor
+
+# Car Price Predictor
 
 Project Overview
 This project is a web application built using Python and Streamlit that predicts the selling price of a used car based on various features. The prediction is powered by a machine learning model, specifically an XGBoost Regressor, trained on a comprehensive public dataset of used car listings.
@@ -83,3 +84,7 @@ The model was trained on a publicly available dataset. You can find the dataset 
 Kaggle Car Price Prediction Dataset
 
 Note: This project is a demonstration and should be used for educational purposes only. The predictions are based on a simplified model and may not reflect the actual market value.
+=======
+# Car-Price-Prediction
+Data mining course project
+>>>>>>> 83472f1ce334d6e2c31e12d0fcb66a73d8ffeb23

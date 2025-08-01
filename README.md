@@ -1,12 +1,12 @@
 
 # Car Price Predictor
 
-Project Overview
 This project is a web application built using Python and Streamlit that predicts the selling price of a used car based on various features. The prediction is powered by a machine learning model, specifically an XGBoost Regressor, trained on a comprehensive public dataset of used car listings.
 
 The application provides a user-friendly interface to input car details, get a price prediction, and understand the key factors influencing the predicted value.
 
-Features
+Features:
+
 Interactive Interface: A clean and intuitive Streamlit interface for seamless user interaction.
 
 Price Prediction: Predicts car prices using a trained machine learning model.

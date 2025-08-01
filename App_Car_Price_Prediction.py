@@ -70,6 +70,9 @@ def main():
     """
     st.markdown('<p class="main-header">Car Price Predictor</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Enter the vehicle\'s details below to get a price prediction.</p>', unsafe_allow_html=True)
+    
+    # Add the GitHub link here
+    st.markdown("View the source code on GitHub: [Car Price Predictor](https://github.com/gbennett90/Car-Price-Prediction.git)")
 
     # --- Create input widgets for car features ---
     with st.form(key='prediction_form'):

@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.preprocessing import PolynomialFeatures
 import warnings
 import joblib
 import re
@@ -45,7 +44,7 @@ print("\n--- Checking for Missing Values (Percentage) ---")
 print(100 * df.isnull().sum() / len(df))
 
 
-# -- Data cleaning and preporcessing --
+# -- Data cleaning and preprocessing --
 
 # Drop rows with any missing values
 print("\n--- Dropping rows with missing values ---")
@@ -74,6 +73,28 @@ print(df.columns)
 
 print("\n--- DataFrame Information after cleaning ---")
 df.info()
+
+# --- Clean Numerical Features by removing units ---
+print("\n--- Cleaning Numerical Features by removing units ---")
+def clean_numerical_column(column_series):
+    # Use a regular expression to extract the number
+    cleaned_series = column_series.astype(str).str.extract('(\d+\.?\d*)').astype(float)
+    return cleaned_series
+
+df['mileagekmltrkg'] = clean_numerical_column(df['mileagekmltrkg'])
+df['max_power'] = clean_numerical_column(df['max_power'])
+df['engine'] = clean_numerical_column(df['engine'])
+df['seats'] = clean_numerical_column(df['seats'])
+print("Cleaned numerical columns by removing units.")
+
+# --- Extract Car Brand from 'name' and handle low-frequency brands ---
+print("\n--- Extracting Car Brand and handling low-frequency brands ---")
+df['brand'] = df['name'].apply(lambda x: x.split(' ')[0])
+brand_counts = df['brand'].value_counts()
+other_brands = brand_counts[brand_counts < 10].index
+df['brand'] = df['brand'].replace(other_brands, 'Other')
+print("Extracted car 'brand' and grouped less common ones.")
+
 
 # -- Exploratory data analysis and Visualization --
 
@@ -111,13 +132,14 @@ df['car_age'] = current_year - df['year']
 print(f"Created 'car_age' feature. Current year used: {current_year}")
 
 print("\n--- Performing One-Hot Encoding on Categorical Features ---")
-# Identify the categorical columns
-categorical_cols = ['fuel', 'seller_type', 'transmission', 'owner']
+# Identify the categorical columns, INCLUDING THE NEW 'brand' FEATURE
+categorical_cols = ['fuel', 'seller_type', 'transmission', 'owner', 'brand']
 # Perform one-hot encoding
 df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
 print("Categorical features have been one-hot encoded.")
 
 # Drop columns that are no longer needed for modeling
+# We now drop the original 'name' and 'year' columns.
 df.drop(['name', 'year'], axis=1, inplace=True)
 print("Dropped 'name' and original 'year' columns.")
 
@@ -167,14 +189,14 @@ print("\n--- Training the Linear Regression Model ---")
 # Initialize and train the Linear Regression model
 linear_model = LinearRegression()
 linear_model.fit(X_train, y_train)
-print("Model training complete.")
+print("Linear Regression model training complete.")
 
-print("\n--- Making Predictions ---")
+print("\n--- Making Predictions (Linear Regression) ---")
 # Make predictions on the test set
 y_pred = linear_model.predict(X_test)
 print("Predictions on test data generated.")
 
-print("\n--- Evaluating Model Performance ---")
+print("\n--- Evaluating Linear Regression Model Performance ---")
 # Calculate and print evaluation metrics
 mae = mean_absolute_error(y_test, y_pred)
 mse = mean_squared_error(y_test, y_pred)
@@ -227,19 +249,15 @@ print(f"XGBoost MSE: {mse_xgb:.2f}")
 print(f"XGBoost RMSE: {rmse_xgb:.2f}")
 print(f"XGBoost R-squared (R2): {r2_xgb:.2f}")
 
-# -- Feature --
+# -- Feature Importance --
 
 print("\n--- Analyzing Feature Importance of the XGBoost Model ---")
-
 # Get feature importances from the trained XGBoost model
 feature_importances = xgb_model.feature_importances_
-
 # Get the feature names from the training data
 feature_names = X_train.columns
-
 # Create a pandas Series for easy handling and plotting
 importance_df = pd.Series(feature_importances, index=feature_names).sort_values(ascending=False)
-
 # Create a bar plot to visualize feature importances
 plt.figure(figsize=(12, 8))
 sns.barplot(x=importance_df.values, y=importance_df.index, palette='viridis')
@@ -251,14 +269,16 @@ plt.show()
 
 print("Feature importance analysis complete and visualization generated.")
 
-# -- Save the model and scaler
+# -- Save the model, scaler, and column list
 
-print("\n--- Saving the Trained Models and Scaler ---")
-# Save the trained models and the scaler to files
+print("\n--- Saving the Trained Models, Scaler, and Column List ---")
+# Save the trained models, the scaler, and the column list to files
 joblib.dump(linear_model, 'linear_regression_model.pkl')
 joblib.dump(xgb_model, 'xgboost_regressor_model.pkl')
 joblib.dump(scaler, 'scaler.pkl')
-print("Models and scaler saved to 'linear_regression_model.pkl', 'xgboost_regressor_model.pkl', and 'scaler.pkl'.")
+# --- THIS IS THE NEW CRUCIAL LINE ---
+joblib.dump(X_train.columns, 'training_columns.pkl')
+print("Models, scaler, and training column list saved to files.")
 
 # -- Visualize model prediction --
 

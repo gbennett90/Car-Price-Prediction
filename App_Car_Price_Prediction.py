@@ -7,10 +7,16 @@ import joblib
 import numpy as np
 import datetime
 import requests
+import os
 
 # --- API Configuration ---
-# API key for currency conversion.
-API_KEY = "59004b0c9349fa90c096df7c"
+# API key for currency conversion, retrieved securely from Streamlit secrets.
+# This prevents your key from being exposed in your code.
+try:
+    API_KEY = st.secrets["EXCHANGE_RATE_API_KEY"]
+except KeyError:
+    # Fallback for local development with an .env file
+    API_KEY = os.getenv("EXCHANGE_RATE_API_KEY")
 
 # Fetches the INR to USD exchange rate.
 def get_exchange_rate(api_key):
@@ -92,7 +98,7 @@ def load_resources():
         training_columns = joblib.load('training_columns.pkl')
         
         try:
-            sample_data = pd.read_csv('cleaned_car_data.csv') 
+            sample_data = pd.read_csv('cleaned_car_data.csv')
         except FileNotFoundError:
             data = {
                 'selling_price': np.random.uniform(100000, 1000000, 500),
@@ -160,9 +166,9 @@ def main():
             st.session_state.prediction_made = True
             
             user_input = {
-                'brand': st.session_state.brand_input, 'year': st.session_state.year_input, 
+                'brand': st.session_state.brand_input, 'year': st.session_state.year_input,
                 'km_driven': st.session_state.km_driven_input, 'engine': st.session_state.engine_input,
-                'max_power': st.session_state.max_power_input, 'seats': st.session_state.seats_input, 
+                'max_power': st.session_state.max_power_input, 'seats': st.session_state.seats_input,
                 'fuel': st.session_state.fuel_input, 'seller_type': st.session_state.seller_type_input,
                 'transmission': st.session_state.transmission_input, 'owner': st.session_state.owner_input
             }
@@ -181,9 +187,9 @@ def main():
             if f'transmission_{user_input["transmission"]}' in input_data_processed.columns: input_data_processed.loc[0, f'transmission_{user_input["transmission"]}'] = 1
             if f'owner_{user_input["owner"]}' in input_data_processed.columns: input_data_processed.loc[0, f'owner_{user_input["owner"]}'] = 1
             
-            if user_input['brand'] != 'Other' and f'brand_{user_input["brand"]}' in input_data_processed.columns: 
+            if user_input['brand'] != 'Other' and f'brand_{user_input["brand"]}' in input_data_processed.columns:
                 input_data_processed.loc[0, f'brand_{user_input["brand"]}'] = 1
-            elif user_input['brand'] == 'Other' and 'brand_Other' in input_data_processed.columns: 
+            elif user_input['brand'] == 'Other' and 'brand_Other' in input_data_processed.columns:
                 input_data_processed.loc[0, 'brand_Other'] = 1
             
             # Scales numerical features.
@@ -321,8 +327,8 @@ def main():
                 if feature in ['engine', 'max_power', 'car_age', 'km_driven', 'seats'] or f'brand_{user_input["brand"]}' == feature:
                     relevant_features.append(feature.replace('_', ' ').title())
                 elif 'brand_' in feature and len(relevant_features) < 3:
-                     relevant_features.append(f'Its specific **brand**')
-                
+                    relevant_features.append(f'Its specific **brand**')
+            
             if relevant_features:
                 st.info(f"🥇 **Top Influential Features:** {', '.join(relevant_features[:3])}")
             
@@ -342,127 +348,127 @@ def main():
             pros_cons_data = {
                 
                 'Maruti': {
-                    'Pros': ["Excellent fuel efficiency", "Low maintenance costs", "Extensive service network", "High resale value"], 
+                    'Pros': ["Excellent fuel efficiency", "Low maintenance costs", "Extensive service network", "High resale value"],
                     'Cons': ["Some models have basic interiors and lack premium feel", "Safety features may be limited in base models", "Long waiting periods for popular models"]
                 },
 
                 'Hyundai': {
-                    'Pros': ["Modern design and premium features", "Good build quality", "Strong after-sales support"], 
+                    'Pros': ["Modern design and premium features", "Good build quality", "Strong after-sales support"],
                     'Cons': ["Maintenance costs can be slightly higher than competitors", "Some models have lower fuel efficiency"]
                 },
 
                 'Mahindra': {
-                    'Pros': ["Robust and rugged build quality", "Powerful engines", "High ground clearance"], 
+                    'Pros': ["Robust and rugged build quality", "Powerful engines", "High ground clearance"],
                     'Cons': ["Lower fuel efficiency in some models", "Ride quality can be a bit bumpy"]
                 },
 
                 'Tata': {
-                    'Pros': ["Excellent build quality and safety ratings", "Spacious and comfortable interiors", "Value for money"], 
+                    'Pros': ["Excellent build quality and safety ratings", "Spacious and comfortable interiors", "Value for money"],
                     'Cons': ["After-sales service experience can be inconsistent", "Some models have minor quality control issues"]
                 },
 
                 'Honda': {
-                    'Pros': ["Refined and reliable engines", "Spacious and comfortable cabins", "High resale value"], 
+                    'Pros': ["Refined and reliable engines", "Spacious and comfortable cabins", "High resale value"],
                     'Cons': ["Features and interior design can feel dated in some models", "More expensive than some competitors"]
                 },
 
                 'Force': {
-                    'Pros': ["Exceptional off-road capability", "Spacious interior for large families", "Durable and reliable build"], 
+                    'Pros': ["Exceptional off-road capability", "Spacious interior for large families", "Durable and reliable build"],
                     'Cons': ["Poor fuel economy", "Basic interior and features", "Limited service network"]
                 },
 
                 'Chevrolet': {
-                    'Pros': ["Good safety features", "Comfortable ride", "Strong after-sales support"], 
+                    'Pros': ["Good safety features", "Comfortable ride", "Strong after-sales support"],
                     'Cons': ["Lower resale value compared to segment leaders", "Limited model lineup"]
                 },
 
                 'Toyota': {
-                    'Pros': ["Legendary reliability and durability", "Low maintenance costs", "High resale value"], 
+                    'Pros': ["Legendary reliability and durability", "Low maintenance costs", "High resale value"],
                     'Cons': ["Some models are not feature-rich", "Can be more expensive to purchase"]
                 },
 
                 'Renault': {
-                    'Pros': ["Stylish design", "Value-for-money pricing", "Good fuel efficiency"], 
+                    'Pros': ["Stylish design", "Value-for-money pricing", "Good fuel efficiency"],
                     'Cons': ["Limited features in some variants", "After-sales support is not as widespread"]
                 },
 
                 'Volkswagen': {
-                    'Pros': ["Solid build quality and premium feel", "Strong performance and handling", "Safety features"], 
+                    'Pros': ["Solid build quality and premium feel", "Strong performance and handling", "Safety features"],
                     'Cons': ["Higher maintenance costs", "More expensive spare parts"]
                 },
 
                 'Skoda': {
-                    'Pros': ["Premium interiors and design", "Powerful and efficient engines", "Great ride quality"], 
+                    'Pros': ["Premium interiors and design", "Powerful and efficient engines", "Great ride quality"],
                     'Cons': ["Expensive maintenance and spare parts", "Fewer service centers"]
                 },
 
                 'Nissan': {
-                    'Pros': ["Reliable engines and comfortable ride", "Fuel efficiency", "Spacious interiors"], 
+                    'Pros': ["Reliable engines and comfortable ride", "Fuel efficiency", "Spacious interiors"],
                     'Cons': ["Interior quality is not as good as competitors", "Limited features in some models"]
                 },
 
                 'Audi': {
-                    'Pros': ["Luxurious interiors and high-quality materials", "Advanced technology and features", "Strong performance"], 
+                    'Pros': ["Luxurious interiors and high-quality materials", "Advanced technology and features", "Strong performance"],
                     'Cons': ["Very high maintenance costs", "Expensive parts and repairs", "Rapid depreciation in value"]
                 },
 
                 'BMW': {
-                    'Pros': ["Exceptional driving dynamics", "Luxurious and premium cabins", "Advanced technology"], 
+                    'Pros': ["Exceptional driving dynamics", "Luxurious and premium cabins", "Advanced technology"],
                     'Cons': ["High ownership costs", "Expensive to maintain and repair", "Specific model years have known issues"]
                 },
 
                 'Mercedes-Benz': {
-                    'Pros': ["Ultimate luxury and comfort", "Superior safety and technology", "Strong brand image"], 
+                    'Pros': ["Ultimate luxury and comfort", "Superior safety and technology", "Strong brand image"],
                     'Cons': ["Extremely high purchase price and maintenance costs", "Depreciation can be significant"]
                 },
 
                 'Other': {
-                    'Pros': ["Unique styling and features"], 
+                    'Pros': ["Unique styling and features"],
                     'Cons': ["Can be difficult to find parts", "Limited resale value"]
                 },
 
                 'Datsun': {
-                    'Pros': ["Affordable pricing", "Low running costs", "Compact and easy to drive in the city"], 
+                    'Pros': ["Affordable pricing", "Low running costs", "Compact and easy to drive in the city"],
                     'Cons': ["Basic interiors and features", "Sub-par safety ratings", "Limited resale value"]
                 },
 
                 'Mitsubishi': {
-                    'Pros': ["Reliable engines and strong build", "Good off-road capabilities in some models", "Long-term durability"], 
+                    'Pros': ["Reliable engines and strong build", "Good off-road capabilities in some models", "Long-term durability"],
                     'Cons': ["Outdated technology and features", "Limited service network", "Lower fuel efficiency"]
                 },
 
                 'Fiat': {
-                    'Pros': ["Stylish and unique design", "Fun to drive with good handling", "Good fuel efficiency"], 
+                    'Pros': ["Stylish and unique design", "Fun to drive with good handling", "Good fuel efficiency"],
                     'Cons': ["Poor resale value", "Limited service centers and expensive parts", "Known for some electrical issues"]
                 },
 
                 'Jeep': {
-                    'Pros': ["Excellent off-road performance", "Iconic design", "High build quality"], 
+                    'Pros': ["Excellent off-road performance", "Iconic design", "High build quality"],
                     'Cons': ["High maintenance costs", "Lower fuel economy", "Expensive spare parts"]
                 },
 
                 'Land Rover': {
-                    'Pros': ["Premium luxury and comfort", "Exceptional off-road capability", "High-quality materials"], 
+                    'Pros': ["Premium luxury and comfort", "Exceptional off-road capability", "High-quality materials"],
                     'Cons': ["Very expensive to maintain and repair", "High purchase price", "Some models have reliability issues"]
                 },
 
                 'Jaguar': {
-                    'Pros': ["Elegant and luxurious design", "High-performance engines", "Refined ride quality"], 
+                    'Pros': ["Elegant and luxurious design", "High-performance engines", "Refined ride quality"],
                     'Cons': ["High maintenance and repair costs", "Poor reliability in some models", "Significant depreciation"]
                 },
 
                 'Volvo': {
-                    'Pros': ["Top-tier safety features", "Comfortable and minimalist design", "Good fuel efficiency"], 
+                    'Pros': ["Top-tier safety features", "Comfortable and minimalist design", "Good fuel efficiency"],
                     'Cons': ["Higher initial cost", "Expensive parts and repairs", "Less sporty than some rivals"]
                 },
 
                 'Ambassador': {
-                    'Pros': ["Iconic design", "Robust build", "Spacious interior"], 
+                    'Pros': ["Iconic design", "Robust build", "Spacious interior"],
                     'Cons': ["Old technology", "Poor fuel efficiency", "Lack of modern safety and convenience features"]
                 },
 
                 'Isuzu': {
-                    'Pros': ["Durable and reliable engines", "Strong towing capacity", "Good off-road performance"], 
+                    'Pros': ["Durable and reliable engines", "Strong towing capacity", "Good off-road performance"],
                     'Cons': ["Basic interior and features", "Limited service network", "Low resale value"]
                 },
             }
@@ -474,12 +480,12 @@ def main():
             col_pros, col_cons = st.columns(2)
             with col_pros:
                 st.markdown("##### 👍 Pros")
-                st.markdown("")  
+                st.markdown("")
                 for pro in brand_data['Pros']:
                     st.write(f"- {pro}")
             with col_cons:
                 st.markdown("##### 👎 Cons")
-                st.markdown("")  
+                st.markdown("")
                 for con in brand_data['Cons']:
                     st.write(f"- {con}")
 

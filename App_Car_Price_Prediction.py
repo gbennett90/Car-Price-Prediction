@@ -10,8 +10,6 @@ import requests
 import os
 
 # --- API Configuration ---
-# API key for currency conversion, retrieved securely from Streamlit secrets.
-# This prevents your key from being exposed in your code.
 try:
     API_KEY = st.secrets["EXCHANGE_RATE_API_KEY"]
 except KeyError:
